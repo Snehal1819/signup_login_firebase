@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0">
+	<title>Firebase Signup Login</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<header>
+		<h1 class="heading">Welcome</h1>
+		<h3 class="title">Login & Registration Form</h3>
+	</header>
+
+	<!-- container div -->
+	<div class="container">
+
+		<!-- upper button section to select
+			the login or signup form -->
+		<div class="slider"></div>
+		<div class="btn">
+			<button class="login">Login</button>
+			<button class="signup">Signup</button>
+		</div>
+
+		<!-- Form section that contains the
+			login and the signup form -->
+		<div class="form-section">
+
+			<!-- login form -->
+			<div class="login-box">
+				<input type="email"
+					id="eemail"
+					placeholder="youremail@email.com">
+				<input type="password"
+					id="ppassword"
+					placeholder="password">
+                <input type="submit" id="log" name="log_submit" value="Log in"/>
+			</div>
+
+			<!-- signup form -->
+			<div class="signup-box">
+				<input type="text"
+					id="name"
+					placeholder="Enter your name">
+				<input type="email"
+					id="email"
+					placeholder="youremail@email.com">
+				<input type="password"
+					id="password"
+					placeholder="password">
+				<input type="submit" id="sup" name="signup_submit" value="Sign up"/>
+			</div>
+		</div>
+	</div>
+	<script src="main.js"></script>
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyxqow0rt0qrnFPsP2C6cxmvGmh0IEMd0",
+      authDomain: "login-signup-auth-ba044.firebaseapp.com",
+      databaseURL: "https://login-signup-auth-ba044-default-rtdb.firebaseio.com",
+      projectId: "login-signup-auth-ba044",
+      storageBucket: "login-signup-auth-ba044.appspot.com",
+      messagingSenderId: "1073862511702",
+      appId: "1:1073862511702:web:da7c0f31b346c01f513ff7"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth();
+   
+sup.addEventListener("click", (e) => {
+	var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+
+    createUserWithEmailAndPassword(auth, email, password)
+       .then((userCredential) => {
+          // Signed in 
+         const user = userCredential.user;
+
+         set(ref(database, 'users/' + user.uid),{
+            name:name,
+            email:email
+         })
+
+         alert("User Created!");
+        })
+
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage);
+        });
+   });
+
+
+log.addEventListener("click", (e) => {
+	var email = document.getElementById('eemail').value;
+    var password = document.getElementById('ppassword').value;
+
+    signInWithEmailAndPassword(auth, email, password)
+       .then((userCredential) => {
+         // Signed in 
+         const user = userCredential.user;
+
+         const dt = new Date();
+         update(ref(database, 'users/' + user.uid),{
+            last_login:dt,
+        })
+         alert("User Logged In!");
+        window.location.href="dashboard.html";
+    })
+        .catch((error) => {
+           const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage);
+       });
+
+   });
+</script>
+</html>
